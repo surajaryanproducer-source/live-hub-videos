@@ -1,0 +1,10 @@
+{
+  "name": "xnxx.health",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Static site with Netlify Functions for LIVE HUB admin",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@netlify/blobs": "^5.0.0"
+  }
+}

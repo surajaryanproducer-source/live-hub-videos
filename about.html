@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LIVE HUB - About</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/local-overrides.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-primary navbar-light">
+    <div class="container align-items-center">
+      <a class="navbar-brand me-2" href="/">LIVE HUB</a>
+      <div class="header-search flex-grow-1 px-2">
+        <input id="searchInput" type="search" class="form-control" placeholder="Search title, profile or category">
+      </div>
+      <button class="btn btn-outline-secondary ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainMenuOffcanvas" aria-controls="mainMenuOffcanvas">Menu</button>
+    </div>
+  </nav>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mainMenuOffcanvas" aria-labelledby="mainMenuLabel">
+    <div class="offcanvas-header">
+      <h5 id="mainMenuLabel">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <a class="nav-link" href="/terms.html">Terms &amp; Conditions</a>
+        <a class="nav-link" href="/about.html">About</a>
+        <a class="nav-link" href="/privacy.html">Privacy Policy</a>
+      </div>
+      <div id="menuCategories" class="navbar-nav flex-column gap-1"></div>
+    </div>
+  </div>
+  <main class="container py-4">
+    <h1 class="h4 mb-4">About LIVE HUB</h1>
+    <section class="mb-4">
+      <h2 class="h5">What is LIVE HUB?</h2>
+      <p>LIVE HUB is a modern video streaming platform focused on curated content. Videos are managed by the site administrator to ensure consistent quality and a seamless viewing experience.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">How Content Is Managed</h2>
+      <p>All videos available on LIVE HUB are added and maintained by the administrator. Users do not upload content; this approach keeps the library organized and safe.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Purpose and Vision</h2>
+      <p>Our mission is to provide a clean and reliable streaming experience with simple navigation, clear categorization, and responsive design across devices.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Contact</h2>
+      <p>For inquiries, please reach us at contact@livehub.com or through our website contact form.</p>
+    </section>
+  </main>
+  <footer class="footer py-4">
+    <div class="container text-center">
+      <small><a href="/terms.html">Terms &amp; Conditions</a> • <a href="/about.html">About</a> • © LIVE HUB</small>
+    </div>
+  </footer>
+  <script>
+    (function setupSearch(){
+      const si = document.getElementById('searchInput');
+      if (!si) return;
+      si.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const q = si.value.trim();
+          window.location.href = '/index.html?q=' + encodeURIComponent(q);
+        }
+      });
+    })();
+    (function renderMenuCategories(){
+      const holder = document.getElementById('menuCategories');
+      if (!holder) return;
+      const raw = localStorage.getItem('livehub_categories');
+      let cats = [];
+      try { const arr = JSON.parse(raw); cats = Array.isArray(arr) ? arr : []; } catch {}
+      holder.innerHTML = '';
+      ['All', ...cats].forEach(name => {
+        const a = document.createElement('a');
+        a.className = 'nav-link';
+        a.href = '/category.html?name=' + encodeURIComponent(name);
+        a.textContent = name;
+        holder.appendChild(a);
+      });
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

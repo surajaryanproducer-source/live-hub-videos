@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LIVE HUB - Video</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/local-overrides.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-primary navbar-light">
+    <div class="container align-items-center">
+      <a class="navbar-brand me-2" href="/">LIVE HUB</a>
+      <div class="header-search flex-grow-1 px-2">
+        <input id="searchInput" type="search" class="form-control" placeholder="Search title, profile or category">
+      </div>
+      <button class="btn btn-outline-secondary ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainMenuOffcanvas" aria-controls="mainMenuOffcanvas">Menu</button>
+    </div>
+  </nav>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mainMenuOffcanvas" aria-labelledby="mainMenuLabel">
+    <div class="offcanvas-header">
+      <h5 id="mainMenuLabel">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <a class="nav-link" href="/terms.html">Terms &amp; Conditions</a>
+        <a class="nav-link" href="/about.html">About</a>
+        <a class="nav-link" href="/privacy.html">Privacy Policy</a>
+      </div>
+      <div id="menuCategories" class="navbar-nav flex-column gap-1"></div>
+    </div>
+  </div>
+  <main class="container py-4">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div id="videoContainer" class="mb-3">
+          <div id="playerArea" class="ratio ratio-16x9">
+            <iframe id="playerFrame" src="" title="Video player" loading="lazy" referrerpolicy="no-referrer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+          <div id="playerFallback" class="p-3 text-center text-danger d-none">Playback not supported</div>
+        </div>
+        <h1 id="videoTitle" class="h4 mb-2"></h1>
+        <div class="d-flex gap-3 align-items-center mb-2">
+          <span id="videoDuration" class="badge bg-secondary"></span>
+          <img id="videoProfileAvatar" class="profile-avatar" alt="" style="display:none;">
+          <a id="videoProfile" class="link-primary" href="#"></a>
+        </div>
+      </div>
+      <div class="col-12">
+        <h2 class="h6 mb-3">Related</h2>
+        <div id="relatedGrid" class="row g-3"></div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer py-4">
+    <div class="container text-center">
+      <small><a href="/terms.html">Terms &amp; Conditions</a> • <a href="/about.html">About</a> • © LIVE HUB</small>
+    </div>
+  </footer>
+  <script>
+    function safeParse(s){ try{ return JSON.parse(s) } catch (e) { return null } }
+    function isItem(obj){ return obj && typeof obj === 'object' && ('title' in obj || 'link' in obj || 'video' in obj) }
+    async function getLiveContent(){
+      try {
+        const res = await fetch('/.netlify/functions/content', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.items) && data.items.length > 0) return data.items;
+        }
+      } catch {}
+      try {
+        const raw = localStorage.getItem('livehub_content');
+        const j = raw ? safeParse(raw) : null;
+        if (j && Array.isArray(j.items) && j.items.length > 0) return j.items;
+      } catch {}
+      try {
+        const v = localStorage.getItem('livehub_content_version') || String(Date.now());
+        const res2 = await fetch('/assets/content.json?v=' + encodeURIComponent(v), { cache: 'no-store' });
+        if (res2.ok) {
+          const data2 = await res2.json();
+          if (Array.isArray(data2.items)) return data2.items;
+        }
+      } catch {}
+      return [];
+    }
+    function toEmbedUrl(url){
+      if (!url) return '';
+      let u; try{ u = new URL(url) } catch (e) { return url }
+      const host = (u.hostname||'').replace(/^www\./,'');
+      if (host === 'youtu.be'){ const vid = u.pathname.replace('/',''); return vid ? 'https://www.youtube.com/embed/'+vid+'?modestbranding=1&rel=0&showinfo=0' : url }
+      if (host.endsWith('youtube.com')){ const vid = u.searchParams.get('v'); if (vid) return 'https://www.youtube.com/embed/'+vid+'?modestbranding=1&rel=0&showinfo=0'; const m = (u.pathname||'').match(/\/embed\/([A-Za-z0-9_-]+)/); if (m && m[1]) return 'https://www.youtube.com/embed/'+m[1]+'?modestbranding=1&rel=0&showinfo=0'; return url }
+      if (host === 'drive.google.com'){ const m = (u.pathname||'').match(/\/file\/d\/([^/]+)/); if (m && m[1]) return 'https://drive.google.com/file/d/'+m[1]+'/preview'; const id = u.searchParams.get('id'); if (id) return 'https://drive.google.com/file/d/'+id+'/preview'; return url }
+      if (host.endsWith('vimeo.com')){ const m = (u.pathname||'').match(/\/(\d+)/); if (m && m[1]) return 'https://player.vimeo.com/video/'+m[1]; return url }
+      if (host.endsWith('dailymotion.com')){ const m = (u.pathname||'').match(/\/video\/([A-Za-z0-9]+)/); if (m && m[1]) return 'https://www.dailymotion.com/embed/video/'+m[1]; return url }
+      if (host.endsWith('pornhub.com')){ const key = u.searchParams.get('viewkey'); if (key) return 'https://www.pornhub.com/embed/'+key; const m = (u.pathname||'').match(/\/embed\/([A-Za-z0-9_-]+)/); if (m && m[1]) return 'https://www.pornhub.com/embed/'+m[1]; return url }
+      if (host.endsWith('xvideos.com')){ const m = (u.pathname||'').match(/\/video(\d+)\//); if (m && m[1]) return 'https://www.xvideos.com/embedframe/'+m[1]; return url }
+      if (host.endsWith('xnxx.com')){ const m = (u.pathname||'').match(/\/video-([A-Za-z0-9]+)\//); if (m && m[1]) return 'https://www.xnxx.com/embedframe/'+m[1]; return url }
+      if (host.endsWith('xhamster.com')){ const m = (u.pathname||'').match(/\/videos\/.*?-([0-9]+)/); if (m && m[1]) return 'https://xhamster.com/embed/'+m[1]; return url }
+      return url;
+    }
+    function getDriveId(url){ try{ const u = new URL(url); const host = (u.hostname||'').replace(/^www\./,''); if (host!=='drive.google.com') return ''; const m = (u.pathname||'').match(/\/file\/d\/([^/]+)/); if (m && m[1]) return m[1]; const id = u.searchParams.get('id'); return id||'' } catch { return '' } }
+    function toDriveDirect(url){ const id = getDriveId(url); return id ? ('https://drive.google.com/uc?export=download&id=' + id) : '' }
+    function isPcloudHost(h){ const host = String(h||'').toLowerCase(); return host==='u.pcloud.link' || host.endsWith('pcloud.com') || host.endsWith('pcloud.link') }
+    function toPcloudDirect(url){ try{ const u=new URL(url); if(!isPcloudHost((u.hostname||'').replace(/^www\./,''))) return ''; const code=u.searchParams.get('code'); if ((u.pathname||'').includes('/publink/show') && code) return 'https://u.pcloud.link/publink/download?code='+code; return '' } catch { return '' } }
+    function isDirectStream(url){ try{ const u = new URL(url); const p = (u.pathname||'').toLowerCase(); return p.endsWith('.mp4') || p.endsWith('.m3u8') } catch { return false } }
+    function openPlayerSrc(frame, fallbackEl, src){
+      if (!src || !frame) return;
+      if (fallbackEl) fallbackEl.classList.add('d-none');
+      if (isDirectStream(src)){
+        const area = document.getElementById('playerArea');
+        if (!area) return;
+        area.innerHTML = '<video id=\"html5Player\" controls playsinline style=\"width:100%;height:100%;object-fit:contain;\"></video>';
+        const vid = document.getElementById('html5Player');
+        const isHls = src.toLowerCase().endsWith('.m3u8');
+        if (isHls) {
+          if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+            vid.src = src;
+          } else if (window.Hls && window.Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(src);
+            hls.attachMedia(vid);
+          } else {
+            document.getElementById('playerFallback')?.classList.remove('d-none');
+          }
+        } else {
+          vid.src = src;
+        }
+      } else {
+        frame.removeAttribute('srcdoc');
+        let embed = toEmbedUrl(src);
+        try {
+          const u = new URL(embed);
+          const host = (u.hostname||'').replace(/^www\./,'');
+          if (isPcloudHost(host)) {
+            const area = document.getElementById('playerArea');
+            const direct = toPcloudDirect(embed) || toPcloudDirect(src);
+            if (area && direct) {
+              area.innerHTML = '<video id="html5Player" controls playsinline style="width:100%;height:100%;object-fit:contain;"></video>';
+              const vid = document.getElementById('html5Player');
+              vid.src = direct;
+              vid.addEventListener('error', () => { if (fallbackEl) fallbackEl.classList.remove('d-none') });
+              return;
+            }
+          }
+          if (host === 'drive.google.com') {
+            const area = document.getElementById('playerArea');
+            if (area) {
+              frame.setAttribute('sandbox','allow-scripts allow-same-origin');
+              frame.src = embed;
+              const mask = document.createElement('div');
+              mask.className = 'iframe-mask';
+              area.appendChild(mask);
+              return;
+            }
+          } else {
+            frame.removeAttribute('sandbox');
+          }
+          const allowed = host.endsWith('youtube.com') || host === 'player.vimeo.com' || host.endsWith('dailymotion.com');
+          if (!allowed) { if (fallbackEl) fallbackEl.classList.remove('d-none'); return; }
+        } catch (e) { if (fallbackEl) fallbackEl.classList.remove('d-none'); return; }
+        frame.src = embed;
+      }
+      let loaded = false;
+      const onLoad = () => { loaded = true; if (fallbackEl) fallbackEl.classList.add('d-none'); frame.removeEventListener('load', onLoad); };
+      frame.addEventListener('load', onLoad);
+      setTimeout(() => { if (!loaded && fallbackEl) fallbackEl.classList.remove('d-none'); }, 3000);
+    }
+    function getParam(name){ const u = new URL(window.location.href); return u.searchParams.get(name) }
+    async function render(){
+      const id = getParam('id');
+      const items = await getLiveContent();
+      const item = items.find(it => String(it.id) === String(id));
+      if (!item){ document.getElementById('videoTitle').textContent = 'Not found'; return; }
+      const frame = document.getElementById('playerFrame');
+      const fallbackEl = document.getElementById('playerFallback');
+      const link = item.link || item.video || '';
+      openPlayerSrc(frame, fallbackEl, link);
+      document.getElementById('videoTitle').textContent = item.title || '';
+      document.getElementById('videoDuration').textContent = item.duration || '';
+      const prof = item.profile || 'General';
+      const profileEl = document.getElementById('videoProfile');
+      const avatarEl = document.getElementById('videoProfileAvatar');
+      profileEl.textContent = prof;
+      profileEl.href = '/profile.html?name=' + encodeURIComponent(prof);
+      try {
+        const raw = localStorage.getItem('livehub_profiles');
+        const arr = raw ? JSON.parse(raw) : [];
+        const p = Array.isArray(arr) ? arr.find(x => x && x.name === prof) : null;
+        if (p && p.photo) { avatarEl.src = p.photo; avatarEl.style.display = 'inline-block'; } else { avatarEl.style.display = 'none'; }
+      } catch {}
+      const relatedEl = document.getElementById('relatedGrid');
+      if (relatedEl) {
+        relatedEl.innerHTML = '';
+        const cat = String(item.category || '');
+        let picks = items.filter(it => String(it.id)!==String(id) && String(it.category||'')===cat).slice(0,12);
+        if (picks.length < 6) {
+          const more = items.filter(it => String(it.id)!==String(id) && String(it.category||'')!==cat).slice(0, 12 - picks.length);
+          picks = [...picks, ...more];
+        }
+        const placeholder = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%22640%22 height%3D%23360%22 viewBox%3D%220 0 640 360%22%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 fill%3D%22%23eeeeee%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 fill%3D%22%23000%22 font-family%3D%22Arial%2C%20sans-serif%22 font-size%3D%2222%22%3ELIVE HUB%3C/text%3E%3C/svg%3E';
+        picks.forEach(v => {
+          const col = document.createElement('div');
+          col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+          const imgSrc = v.thumbnail || v.image || placeholder;
+          const vid = v.id != null ? String(v.id) : '';
+          const duration = v.duration || '';
+          col.innerHTML = `
+            <div class="card h-100">
+              <a href="/video.html?id=${encodeURIComponent(vid)}" class="card-img-top-wrap d-block">
+                <img src="${imgSrc}" class="card-img-top" alt="${String(v.title||'')}">
+                <div class="thumb-gradient"></div>
+                ${duration ? `<span class="duration-badge">${String(duration)}</span>` : ''}
+              </a>
+              <div class="card-body py-2">
+                <div class="small">${String(v.title||'')}</div>
+              </div>
+            </div>
+          `;
+          relatedEl.appendChild(col);
+        });
+      }
+    }
+    render();
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'livehub_content' || e.key === 'livehub_profiles' || e.key === 'livehub_content_version') render();
+    });
+    (function setupSearch(){
+      const si = document.getElementById('searchInput');
+      if (!si) return;
+      si.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const q = si.value.trim();
+          window.location.href = '/index.html?q=' + encodeURIComponent(q);
+        }
+      });
+    })();
+    (function renderMenuCategories(){
+      const holder = document.getElementById('menuCategories');
+      if (!holder) return;
+      const raw = localStorage.getItem('livehub_categories');
+      let cats = [];
+      try { const arr = JSON.parse(raw); cats = Array.isArray(arr) ? arr : []; } catch {}
+      holder.innerHTML = '';
+      ['All', ...cats].forEach(name => {
+        const a = document.createElement('a');
+        a.className = 'nav-link';
+        a.href = '/category.html?name=' + encodeURIComponent(name);
+        a.textContent = name;
+        holder.appendChild(a);
+      });
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LIVE HUB - Terms & Conditions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/local-overrides.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-primary navbar-light">
+    <div class="container align-items-center">
+      <a class="navbar-brand me-2" href="/">LIVE HUB</a>
+      <div class="header-search flex-grow-1 px-2">
+        <input id="searchInput" type="search" class="form-control" placeholder="Search title, profile or category">
+      </div>
+      <button class="btn btn-outline-secondary ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainMenuOffcanvas" aria-controls="mainMenuOffcanvas">Menu</button>
+    </div>
+  </nav>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mainMenuOffcanvas" aria-labelledby="mainMenuLabel">
+    <div class="offcanvas-header">
+      <h5 id="mainMenuLabel">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <a class="nav-link" href="/terms.html">Terms &amp; Conditions</a>
+        <a class="nav-link" href="/about.html">About</a>
+        <a class="nav-link" href="/privacy.html">Privacy Policy</a>
+      </div>
+      <div id="menuCategories" class="navbar-nav flex-column gap-1"></div>
+    </div>
+  </div>
+  <main class="container py-4">
+    <h1 class="h4 mb-4">Terms & Conditions</h1>
+    <section class="mb-4">
+      <h2 class="h5">Introduction</h2>
+      <p>LIVE HUB is a video streaming website managed by the site administrator. By accessing or using LIVE HUB, you agree to these Terms & Conditions.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Age Restriction</h2>
+      <p>Access to LIVE HUB is restricted to individuals who are 18 years of age or older. If you are under 18, you must not use this site.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Content Disclaimer</h2>
+      <p>All videos are uploaded and managed by the site administrator. Users are not permitted to upload content. LIVE HUB may include adult-oriented material; viewer discretion is advised.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Ad Disclaimer</h2>
+      <p>LIVE HUB may display advertisements from third-party ad networks. We comply with advertising policies and standards (including networks such as Adsterra and JuicyAds). Advertisements are provided by external partners and may link to third-party sites.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">User Responsibility</h2>
+      <p>By using LIVE HUB, you confirm that viewing adult content is legal in your jurisdiction and agree to use the site responsibly. LIVE HUB is not liable for any consequences arising from access to third-party content or links.</p>
+    </section>
+    <section class="mb-4">
+      <h2 class="h5">Contact Info</h2>
+      <p>For inquiries or concerns, contact: contact@livehub.com or use our website contact form.</p>
+    </section>
+  </main>
+  <footer class="footer py-4">
+    <div class="container text-center">
+      <small><a href="/terms.html">Terms &amp; Conditions</a> • <a href="/about.html">About</a> • © LIVE HUB</small>
+    </div>
+  </footer>
+  <script>
+    (function setupSearch(){
+      const si = document.getElementById('searchInput');
+      if (!si) return;
+      si.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const q = si.value.trim();
+          window.location.href = '/index.html?q=' + encodeURIComponent(q);
+        }
+      });
+    })();
+    (function renderMenuCategories(){
+      const holder = document.getElementById('menuCategories');
+      if (!holder) return;
+      const raw = localStorage.getItem('livehub_categories');
+      let cats = [];
+      try { const arr = JSON.parse(raw); cats = Array.isArray(arr) ? arr : []; } catch {}
+      holder.innerHTML = '';
+      ['All', ...cats].forEach(name => {
+        const a = document.createElement('a');
+        a.className = 'nav-link';
+        a.href = '/category.html?name=' + encodeURIComponent(name);
+        a.textContent = name;
+        holder.appendChild(a);
+      });
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

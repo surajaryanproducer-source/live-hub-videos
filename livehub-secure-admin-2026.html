@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LIVE HUB Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/local-overrides.css">
+</head>
+<body class="admin-ui">
+  <div class="container py-4">
+    <h1>Admin Panel</h1>
+    <div id="loginView" class="card my-3">
+      <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <form id="loginForm" class="row g-3">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="email" placeholder="Gmail (admin only)" required>
+              <label for="email">Gmail (admin only)</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" placeholder="Password" required>
+              <label for="password">Password</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
+        <div id="loginMsg" class="mt-2 text-danger"></div>
+      </div>
+    </div>
+
+    <div id="dashboardView" class="d-none">
+      <div class="d-flex justify-content-between align-items-center my-3">
+        <h5>Content Manager</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#itemModal">Add Item</button>
+        </div>
+      </div>
+      <div id="profileManager" class="card my-3">
+        <div class="card-body">
+          <h6 class="card-title">Profile Manager</h6>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="profileNameInput" placeholder="Profile name">
+                <label for="profileNameInput">Profile name</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Profile Picture</label>
+              <input type="file" class="form-control" id="profilePhotoInput" accept="image/png,image/jpeg">
+              <small class="text-muted">Allowed types: JPG, PNG</small>
+            </div>
+            <div class="col-md-3">
+              <button id="addProfileBtn" class="btn btn-primary w-100">Add Profile</button>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="profilesList" class="row g-2"></div>
+          </div>
+        </div>
+      </div>
+      <div id="categoryManager" class="card my-3">
+        <div class="card-body">
+          <h6 class="card-title">Category Manager</h6>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="catNameInput" placeholder="Category name">
+                <label for="catNameInput">Category name</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button id="addCategoryBtn" class="btn btn-primary w-100">Add Category</button>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="categoriesList" class="row g-2"></div>
+          </div>
+        </div>
+      </div>
+      <div id="adminSettings" class="card my-3">
+        <div class="card-body">
+          <h6 class="card-title">Admin Settings</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="password" class="form-control" id="newAdminPassword" placeholder="New password">
+                <label for="newAdminPassword">New password</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button id="changePasswordBtn" class="btn btn-secondary w-100">Change Password</button>
+            </div>
+          </div>
+          <div id="settingsMsg" class="mt-2 text-muted"></div>
+        </div>
+      </div>
+      <div id="itemsList" class="row g-3"></div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Content Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="itemForm" class="row g-3">
+            <input type="hidden" id="itemId">
+            <div class="col-12">
+              <div class="form-floating">
+                <select class="form-select" id="itemProfileSelect" placeholder="Profile"></select>
+                <label for="itemProfileSelect">Profile</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <select class="form-select" id="itemCategory" placeholder="Category"></select>
+                <label for="itemCategory">Category</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="itemTitle" placeholder="Title" required>
+                <label for="itemTitle">Title</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <textarea class="form-control" id="itemDescription" placeholder="Description" style="height: 120px;"></textarea>
+                <label for="itemDescription">Description</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Thumbnail</label>
+              <input type="file" class="form-control" id="itemImageFile" accept="image/png,image/jpeg">
+              <small class="text-muted">Allowed types: JPG, PNG</small>
+            </div>
+            <div class="col-12">
+              <img id="itemImagePreview" class="img-thumbnail mt-2" alt="Thumbnail preview" style="max-height: 200px; display: none;">
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <input type="url" class="form-control" id="itemVideo" placeholder="Embed or direct stream (.mp4/.m3u8)">
+                <label for="itemVideo">Video Link</label>
+              </div>
+              <div id="videoError" class="mt-2 text-danger d-none">Please enter direct video or embed link</div>
+              <div id="durationStatus" class="mt-2 text-muted d-none">Detecting duration...</div>
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="itemDuration" placeholder="e.g., 5:32">
+                <label for="itemDuration">Duration</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveItemBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="profileDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><span id="profileDetailTitle"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img id="profileDetailAvatar" class="profile-avatar" alt="" style="display:none;">
+            <div class="small text-muted" id="profileDetailCount"></div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div></div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-secondary btn-sm" id="profileDetailEditBtn">Edit Profile</button>
+              <button class="btn btn-danger btn-sm" id="profileDetailDeleteBtn">Delete Profile</button>
+              <button class="btn btn-primary btn-sm" id="profileDetailAddBtn">Add Video</button>
+            </div>
+          </div>
+          <div id="profileDetailList" class="row g-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="adminAgeGate" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Age Confirmation</h5>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3">This website contains adult content. You must be 18+ to enter.</p>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="adminAgeRemember">
+            <label class="form-check-label" for="adminAgeRemember">Do not show again for 30 days</label>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" id="adminAgeUnder">I am under 18</button>
+          <button type="button" class="btn btn-primary" id="adminAgeOver">I am 18+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/admin.js"></script>
+  <script>
+    (function adminAgeGate(){
+      function shouldShow() {
+        try {
+          const raw = localStorage.getItem('age_gate');
+          if (raw) {
+            const j = JSON.parse(raw);
+            if (j && j.accepted && j.exp && Number(j.exp) > Date.now()) return false;
+          }
+        } catch {}
+        if (sessionStorage.getItem('age_session') === 'accepted') return false;
+        return true;
+      }
+      const modalEl = document.getElementById('adminAgeGate');
+      if (!modalEl) return;
+      const modal = new window.bootstrap.Modal(modalEl);
+      if (shouldShow()) modal.show();
+      const overBtn = document.getElementById('adminAgeOver');
+      const underBtn = document.getElementById('adminAgeUnder');
+      const rememberEl = document.getElementById('adminAgeRemember');
+      if (overBtn) {
+        overBtn.addEventListener('click', () => {
+          if (rememberEl && rememberEl.checked) {
+            const exp = Date.now() + 30*24*60*60*1000;
+            localStorage.setItem('age_gate', JSON.stringify({ accepted: true, exp }));
+          } else {
+            sessionStorage.setItem('age_session', 'accepted');
+          }
+          modal.hide();
+        });
+      }
+      if (underBtn) {
+        underBtn.addEventListener('click', () => {
+          window.location.href = 'about.html?age=denied';
+        });
+      }
+    })();
+  </script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>
