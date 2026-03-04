@@ -1,0 +1,121 @@
+/* Branding overrides for LIVE HUB */
+html, body {
+  background-color: #f8f9fb;
+  color: #212529;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+}
+
+/* Replace blue accents (#000090) with white */
+.text-primary,
+.link-primary,
+.badge-primary,
+.footer,
+.header,
+.brand,
+.xv-responsive .xv-brand,
+.btn-primary,
+.bg-primary {
+  color: #000 !important;
+  background-color: #fff !important;
+  border-color: #fff !important;
+}
+
+/* Ensure buttons remain readable on white background */
+.btn-primary { color: #000 !important; }
+
+a { color: #0d6efd; }
+a:hover, a:focus { color: #0a58ca; }
+
+input, select, textarea {
+  background-color: #fff;
+  color: #212529;
+  border: 1px solid #dee2e6;
+}
+
+.card, .panel, .thumb-block {
+  background-color: #fff !important;
+  border-color: rgba(0,0,0,0.05) !important;
+  color: #212529 !important;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.card:hover { box-shadow: 0 16px 32px rgba(0,0,0,0.12); }
+.card-img-top { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.card-img-top-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+.card-img-top-wrap img { transition: transform .25s ease; }
+.card:hover .card-img-top-wrap img { transform: scale(1.03); }
+.thumb-gradient { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35) 100%); }
+.play-icon { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; font-size: 28px; }
+.card:hover .play-icon { opacity: 1; transform: translate(-50%,-50%) scale(1.05); }
+
+.navbar {
+  background-color: #fff !important;
+  border-bottom: 1px solid #fff !important;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #000 !important;
+}
+.header-search { flex: 1 1 auto; max-width: 600px; }
+.header-search .form-control { border-radius: 24px; padding-left: 14px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: #e9ecef; display: inline-block; }
+.profile-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.profile-avatar-lg { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+.container { max-width: 1200px; }
+
+.duration-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.card-img-top-wrap { position: relative; }
+.profile-banner { background: linear-gradient(135deg,#eef1f5,#fafafa); border-radius: 12px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.category-bar { display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; scrollbar-width: thin; }
+.category-bar::-webkit-scrollbar { height: 8px; }
+.category-bar::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 8px; }
+.category-pill { display: inline-block; padding: 8px 12px; border-radius: 16px; background: #fff; border: 1px solid #dee2e6; white-space: nowrap; cursor: pointer; transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
+.category-pill:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.category-pill.active { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+.offcanvas .nav-link { padding: 6px 0; }
+.iframe-mask { position: absolute; top: 0; right: 0; width: 72px; height: 72px; z-index: 2; background: linear-gradient(to bottom left, rgba(0,0,0,0.6), rgba(0,0,0,0)); pointer-events: auto; }
+#playerArea { position: relative; }
+
+.admin-ui {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+.admin-ui a {
+  color: #000 !important;
+}
+.admin-ui .card,
+.admin-ui .modal-content {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #000 !important;
+}
+.admin-ui .form-label {
+  color: #212529 !important;
+}
+.admin-ui input,
+.admin-ui select,
+.admin-ui textarea,
+.admin-ui .form-control {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #343a40 !important;
+}
+.admin-ui .form-control::placeholder,
+.admin-ui input::placeholder,
+.admin-ui textarea::placeholder {
+  color: #6c757d !important;
+  opacity: 1;
+}
